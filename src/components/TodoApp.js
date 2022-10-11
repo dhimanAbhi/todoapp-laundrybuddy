@@ -4,24 +4,45 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-
+import {app, database} from "../firebaseConfig"
+import {collection, addDoc, getDocs} from 'firebase/firestore'
+import allItemsData from '../utils/getData';
 function TodoApp() {
     const [newItem, setNewItem] = useState('')
-    const [editItem, setEditItem] = useState('')
     const [itemList, setItemList] = useState([])
+    const [operation, setoperation] = useState("")
     
-    const addItem = () => {
+    const userAccessToken = localStorage.getItem('userAccessToken')
+    const collectionRef = collection(database, 'todoData')
 
+    const addItem = () => {
         if(!newItem){
             alert("Please add some task!")
         }
         else{
-            setItemList([...itemList, {
-                id: itemList.length,
-                value: newItem,
-                editState: false,
-                toggleIcon: false
-            }])    
+            getDocs(collectionRef)
+            .then((response) => {
+                let data = response.docs.map(item => {
+                    if(item.data().userAccessToken === userAccessToken)
+                        return item.data().items
+                })
+                const newData = {index: itemList.length, value: newItem}
+                addDoc(collectionRef, { 
+                    ...newData,
+                    userAccessToken:userAccessToken
+                })
+                    .then((response) => {
+                        console.log(response)
+                        setItemList([...itemList, newData])
+                    })
+                    .catch((err) => {
+                        console.log(err.message)
+                    })
+                })
+                .catch((err) => {
+                    console.log(err)
+                }) 
+            setoperation("add")
         }
         setNewItem('')
     }
@@ -30,24 +51,27 @@ function TodoApp() {
         setItemList(itemList.filter( el => el.id !== index ))
     }
 
-    const beforeEditItem = (index, itemValues) => {
-
-        if(editItem===''){
-            setEditItem(itemList[index].value)
-        }
-        setItemList(itemList.map(item => {
-            if(item.id === index)
-            {
-                return itemValues
-            }
-            return {...item, editState:false, toggleIcon:false }
-        }))
-
-    }
 
 
     useEffect(() => {
-        console.log(itemList)
+        if(operation == "add"){
+            // addDoc(collectionRef, { 
+            //     items: itemList,
+            //     userAccessToken:userAccessToken
+            // })
+            // .then((response) => {
+            //     console.log(response)
+            //     console.log("data",data)
+            // })
+            // .catch((err) => {
+            //     console.log(err.message)
+            // })
+            
+            setoperation('')
+        }
+        
+        
+
     },[itemList])
 
 
@@ -62,22 +86,9 @@ function TodoApp() {
         {
             itemList ? 
                 itemList.map(item => (
-                    <Item key={item.id}>
-                        {
-                            
-
-                            item.editState?
-                            <input type="text" value={editItem} onChange={e => setEditItem(e.target.value)}  />
-                            :
-                            <div>{item.value}</div>
-                        }
+                    <Item key={item.index}>               
+                        <div>{item.value}</div>                       
                         <ModifyItem>
-                            {
-                                item.toggleIcon ?
-                                    <button onClick={() => beforeEditItem(item.id, {...item, editState:false, toggleIcon:false })} ><EditDone /></button>    
-                                :
-                                    <button onClick={() => beforeEditItem(item.id, {...item, value: editItem, editState:true, toggleIcon:true })} ><Edit /></button>
-                            }
                             <button onClick={() => deleteItem(item.id)}><Delete/></button>
                         </ModifyItem>
                     </Item>
@@ -89,19 +100,7 @@ function TodoApp() {
   )
 }
 
-const Main = styled.div`
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    min-height: 500px;
-    width: 650px;
-    background-color: #ff206e;
-    border-radius:3%;
-    margin-bottom:70px;
-    input{
-        margin: 20px 0px;
-    }
-`
+
 const Title = styled.div`
     font-size:54px;
     font-weight:bold;

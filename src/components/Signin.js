@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components';
 import { authentication } from '../firebaseConfig';
 import { RecaptchaVerifier,  signInWithPhoneNumber } from 'firebase/auth';
-import {BrowserRouter as Router, Link} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 function Signup() {
     const [signupUser, setsignupUser] = useState({});
     const [expandForm, setexpandForm] = useState(false)
@@ -14,6 +14,8 @@ function Signup() {
         setsignupUser({...signupUser, ...newInput})
     }
 
+
+  
 
 const generateRecaptcha = () => {
   window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-div', {
@@ -45,7 +47,7 @@ const generateRecaptcha = () => {
     const verifyOTP = (e) => {
       let otp = e.target.value;
       setOTP(otp);
-      const otpInput = document.getElementById('otpInput')
+
       if(otp.length === 6){
         let confirmationResult = window.confirmationResult;
         console.log(confirmationResult)
@@ -57,6 +59,13 @@ const generateRecaptcha = () => {
         });
       }
     }
+
+
+    const returnToSignIn = () => {
+      window.location.reload()
+    }
+
+    
 
   return (
     <form onSubmit={handleSubmit}>
@@ -74,11 +83,11 @@ const generateRecaptcha = () => {
                    <>
                    <input id="otpInput" type="text" placeholder='Enter the OTP' value={OTP} onChange={verifyOTP}/>
                    {otpIncorrect?
-                      <div>
+                      <div style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
                         <ErrorMessage>
                           Incorrect OTP
                         </ErrorMessage>             
-                        <Link to="/signin">Back to Sign In</Link>                 
+                        <Link onClick={returnToSignIn}>Back to Sign In</Link>                 
                       </div>
                     :
                    <div>Please enter the one time pin sent to your phone</div>
@@ -105,7 +114,7 @@ const RegisterElements = styled.div`
 `
 const ErrorMessage = styled.div`
 background-color:rgb(239, 149, 30);
-margin-top:20px;
+margin:20px 0;
 color:red;
 font-weight:800;
 font-size:32px;

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import TodoApp from './TodoApp'
 import Signin from './Signin'
@@ -43,7 +43,7 @@ const Container = styled.div`
     background-color: #0c0f0a;
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
+    justify-content:flex-start;
     align-items:center;
 `
 const NavBar = styled.div`
@@ -65,6 +65,7 @@ const Main = styled.div`
     background-color: #ff206e;
     border-radius:3%;
     margin-bottom:70px;
+    margin-top: 100px;
     input{
         margin: 20px 0px;
     }
@@ -85,6 +86,5 @@ const LogIn = styled.div`
 `
 const SignUp = styled(LogIn)``;
 
-const LogOut = styled(LogIn)``;
 
 
