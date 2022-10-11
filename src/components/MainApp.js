@@ -16,6 +16,14 @@ function MainApp() {
     return (
         <Container>
             <Router>
+                <NavBar>
+                    <div style={{fontSize:"32px", fontWeight:"700", marginLeft:"20px",}}>
+                        <Link  to="/" style={{textDecoration:"none", color:"#000"}}>Todo App</Link>
+                    </div>  
+                    <div style={{display:"flex"}}>
+                        <SignUp><Link to='/signin'  style={{textDecoration:"none", color:"#fff"}}>Sign In</Link></SignUp> 
+                    </div>
+                </NavBar>    
                 <Main>
                     <Routes>
                         <Route exact path="/" element={<TodoApp />}/>
