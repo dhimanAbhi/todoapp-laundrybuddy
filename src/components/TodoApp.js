@@ -5,7 +5,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import {app, database} from "../firebaseConfig"
-import {collection, addDoc, getDocs, query, where} from 'firebase/firestore'
+import {collection, addDoc, getDocs, query, where, doc} from 'firebase/firestore'
 import allItemsData from '../utils/getData';
 function TodoApp() {
     const [newItem, setNewItem] = useState('')
@@ -69,31 +69,14 @@ function TodoApp() {
         setNewItem('')
     }
 
-    const deleteItem = (index) => {
-        setItemList(itemList.filter( el => el.id !== index ))
+    const deleteItem = async (index) => {
+        // setItemList(itemList.filter( el => el.id !== index ))
     }
 
 
 
     useEffect(() => {
-        if(operation == "add"){
-            // addDoc(collectionRef, { 
-            //     items: itemList,
-            //     userAccessToken:userAccessToken
-            // })
-            // .then((response) => {
-            //     console.log(response)
-            //     console.log("data",data)
-            // })
-            // .catch((err) => {
-            //     console.log(err.message)
-            // })
-            
-            setoperation('')
-        }
-        
-        
-
+    
     },[itemList])
 
 
@@ -106,15 +89,18 @@ function TodoApp() {
     </AddItem>
     <ItemList>
         {
-            itemList ? 
+            (itemList.length!==0) ? 
                 itemList.map(item => (
                     <Item key={item.index}>               
                         <div>{item.value}</div>                       
                         <ModifyItem>
-                            <button onClick={() => deleteItem(item.id)}><Delete/></button>
+                            <button onClick={() => deleteItem(item.index)}><Delete/></button>
                         </ModifyItem>
                     </Item>
-                )):''
+                )):
+                toggle?
+                <Spinner />:
+                ''
         }
     </ItemList>
 </>
@@ -168,6 +154,24 @@ const AddItem = styled.div`
         color:#fff;
     }
 
+`
+
+const Spinner = styled.div`
+    width: 64px;
+    height: 64px;
+    border: 8px solid;
+    border-color: #3d5af1 transparent #3d5af1 transparent;
+    border-radius: 50%;
+    animation: spin-anim 1.2s linear infinite;
+
+    @keyframes spin-anim {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 `
 
 const Add = styled(AddIcon)``
