@@ -5,15 +5,37 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import {app, database} from "../firebaseConfig"
-import {collection, addDoc, getDocs} from 'firebase/firestore'
+import {collection, addDoc, getDocs, query, where} from 'firebase/firestore'
 import allItemsData from '../utils/getData';
 function TodoApp() {
     const [newItem, setNewItem] = useState('')
     const [itemList, setItemList] = useState([])
     const [operation, setoperation] = useState("")
-    
-    const userAccessToken = localStorage.getItem('userAccessToken')
+    const [toggle, settoggle] = useState(true)
+
+    const userId = localStorage.getItem('userId')
     const collectionRef = collection(database, 'todoData')
+
+
+    if(toggle){
+            if(allItemsData){
+                const q = query(collectionRef, where("userId", "==", userId));
+                getDocs(q)
+                    .then((response) => {
+                        let data = response.docs.map(item => {
+                            return item.data()
+                        })
+                        setItemList(data)
+                        settoggle(false)    
+                        console.log(userId)
+                        // console.log(data)
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
+            }
+    }
+
 
     const addItem = () => {
         if(!newItem){
@@ -22,14 +44,14 @@ function TodoApp() {
         else{
             getDocs(collectionRef)
             .then((response) => {
-                let data = response.docs.map(item => {
-                    if(item.data().userAccessToken === userAccessToken)
-                        return item.data().items
-                })
+                // let data = response.docs.map(item => {
+                //     if(item.data().userId === userId)
+                //         return item.data().items
+                // })
                 const newData = {index: itemList.length, value: newItem}
                 addDoc(collectionRef, { 
                     ...newData,
-                    userAccessToken:userAccessToken
+                    userId:userId
                 })
                     .then((response) => {
                         console.log(response)

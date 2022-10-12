@@ -44,7 +44,7 @@ const generateRecaptcha = () => {
         }
     }
 
-    const verifyOTP = (e) => {
+    const verifyOTP =  (e) => {
       let otp = e.target.value;
       setOTP(otp);
 
@@ -52,7 +52,8 @@ const generateRecaptcha = () => {
         let confirmationResult = window.confirmationResult;
         console.log(confirmationResult)
         confirmationResult.confirm(otp).then((result) => {
-          localStorage.setItem('userAccessToken',result.user.accessToken)
+          localStorage.setItem('userId',result.user.uid)
+          console.log(result.user)
           window.location = "/"
         }).catch((error) => {
           setotpIncorrect(true)

@@ -66,6 +66,7 @@ const Main = styled.div`
     border-radius:3%;
     margin-bottom:70px;
     margin-top: 100px;
+    padding-bottom:40px;
     input{
         margin: 20px 0px;
     }
